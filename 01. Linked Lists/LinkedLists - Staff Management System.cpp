@@ -109,7 +109,7 @@ void inDS(List Q) {
     printf("Ko co du lieu");
 }
 
-void timKiem(List &Q) {
+void timKiem(List Q) {
   int ma;
   NodeCB *p;
   int temp = 0;
@@ -125,7 +125,7 @@ void timKiem(List &Q) {
   if(temp == 0) printf("Ko tim thay");
 }
 
-int demCB(List &Q) {
+int demCB(List Q) {
   int dem = 0;
   NodeCB *p;
   for(p = Q.Head; p != NULL; p = p->next) {
@@ -136,7 +136,7 @@ int demCB(List &Q) {
   return dem;
 }
 
-float tongLuong(List &Q) {
+float tongLuong(List Q) {
   float tong = 0;
   NodeCB *p;
   for(p = Q.Head; p != NULL; p = p->next)
@@ -145,7 +145,7 @@ float tongLuong(List &Q) {
   return tong;
 }
 
-void tuoiDuoi20(List &Q) {
+void tuoiDuoi20(List Q) {
   NodeCB *p;
   printf("\n%4s%20s%7s%7s%7s%10s", "Ma", "Ten", "Tuoi", "HSL", "PC", "TT");
   for(p = Q.Head; p != NULL; p = p->next) {
@@ -169,7 +169,7 @@ void sapXep(List &Q) {
   }
 }
 
-void luongCaoNhat(List &Q) {
+void luongCaoNhat(List Q) {
   NodeCB *p;
   float max = Q.Head->info.tt;
   for(p = Q.Head; p != NULL; p = p->next) {
