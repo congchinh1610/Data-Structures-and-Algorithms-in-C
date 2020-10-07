@@ -1,7 +1,7 @@
 #include<stdio.h>
 #include<conio.h>
 #include<string.h>
-#include <stdlib.h>
+#include<stdlib.h>
 
 
 struct NV {
@@ -139,11 +139,9 @@ void luongTren2M(DList DQ) {
   int temp = -1;
   for(p = DQ.Head; p != NULL; p = p->next) {
     if(p->info.TL > 2000000) {
-      while(temp) {
-        tieuDe();
+      temp++;
+      if(temp == 0) tieuDe();
         in(p->info);
-        temp++;
-      }
     }
   }
   if(temp == -1)
@@ -168,25 +166,90 @@ void sapXepMaTangDan(DList DQ) {
   }
 }
 
+static void menu() {
+  printf("\n-------------------------------------------");
+  printf("\n0. Thoat");
+  printf("\n1. Nhap ds cb");
+  printf("\n2. In ds");
+  printf("\n3. Them 1 nv vao dau ds");
+  printf("\n4. Tinh tong luong");
+  printf("\n5. Huy nv cuoi cung khoi danh sach");
+  printf("\n6. Tim nhan vien luong cao nhat");
+  printf("\n7. In ds co luong > 2m");
+  printf("\n8. Sap xep ma nv tang dan");
+  printf("\n-------------------------------------------\n");
+}
+
+static void run() {
+  int chon;
+
+  do {
+    menu();
+    printf("\nLua chon: ");
+    scanf("%d", &chon);
+    switch(chon) {
+      case 1:
+        nhapDS(DListNV);
+        break;
+      case 2:
+        inDS(DListNV);
+        break;
+      case 3: {
+        NV nv;
+        printf("\nNhap thong tin nv can them\n");
+        nhap(nv);
+        DNodeNV *a = getDNodeNV(nv);
+        chenDau(DListNV, a);
+        break;
+      }
+      case 4:
+        printf("\nTong luong = %.1f", tongLuong(DListNV));
+        break;
+      case 5:
+        xoaCuoi(DListNV);
+        printf("\nDs sau khi huy nv cuoi cung");
+        inDS(DListNV);
+        break;
+      case 6:
+        printf("\nNV co luong max\n");
+        tieuDe();
+        in(luongCaoNhat(DListNV)->info);
+        break;
+      case 7:
+        printf("\nLuong > 2M");
+        luongTren2M(DListNV);
+        break;
+      case 8:
+        printf("\nDS sau khi sx tang dan theo ma");
+        sapXepMaTangDan(DListNV);
+        inDS(DListNV);
+        break;
+
+      default: break;
+    }
+  } while(chon);
+}
+
 int main() {
 
-	nhapDS(DListNV);
-	inDS(DListNV);
-	printf("\nTong luong = %.1f", tongLuong(DListNV));
+//	nhapDS(DListNV);
+//	inDS(DListNV);
+//	printf("\nTong luong = %.1f", tongLuong(DListNV));
+//
+//	printf("\nDS sau khi huy nhan vien cuoi\n");
+//	xoaCuoi(DListNV);
+//	inDS(DListNV);
+//
+//	printf("\nCB co luong cao nhat: ");
+//	tieuDe();
+//	in(luongCaoNhat(DListNV)->info);
+//
+//	printf("\nLuong > 2M");
+//	luongTren2M(DListNV);
+//
+//	printf("\nDS sau khi sx tang dan theo ma");
+//  sapXepMaTangDan(DListNV);
+//  inDS(DListNV);
 
-	printf("\nDS sau khi huy nhan vien cuoi\n");
-	xoaCuoi(DListNV);
-	inDS(DListNV);
-
-	printf("\nCB co luong cao nhat: ");
-	tieuDe();
-	in(luongCaoNhat(DListNV)->info);
-
-	printf("\nLuong > 2M");
-	luongTren2M(DListNV);
-
-	printf("\nDS sau khi sx tang dan theo ma");
-  sapXepMaTangDan(DListNV);
-  inDS(DListNV);
-	return 0;
+  run();
 }
