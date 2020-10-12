@@ -13,7 +13,7 @@ struct Node {
 };
 
 struct Stack {
-  Node top;
+  Node *top;
 };
 
 void init(Stack &s) {
