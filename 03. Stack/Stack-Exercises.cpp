@@ -63,15 +63,43 @@ void nhap(SinhVien &x) {
   x.dTB = (x.dLT + x.dTH + x.dT) / 3;
 }
 
+static void tieuDe() {
+  printf("%4s%20s%7s%7s%7s%7s", "Ma", "Ten", "DLT", "DTH", "DT", "DTB");
+}
+
 void in(SinhVien x) {
   printf("\n%4d", x.maSV);
   printf("%20s", x.hoTen);
   printf("%7.1f%7.1f%7.1f%7.1f", x.dLT, x.dTH, x.dT, x.dTB);
 }
 
+void nhapDS(Stack &s) {
+  int n;
+  init(s);
+  SinhVien x;
+  printf("n = ");
+  scanf("%d", &n);
+  for(int i = 0; i < n; i++) {
+    printf("\nNhap sv thu %d:\n", i + 1);
+    nhap(x);
+    push(s, x);
+  }
+}
+
+void inDS(Stack s) {
+  tieuDe();
+  for(Node *p = s.top; p != NULL; p = p->next) {
+    in(p->info);
+  }
+}
 
 
 int main() {
+  Stack StackSV;
+//  SinhVien x;
+
+  nhapDS(StackSV);
+  inDS(StackSV);
 
 
 }
