@@ -87,7 +87,7 @@ void inGV(GiaoVien x) {
   printf("%15d", x.namSinh);
   printf("%15s", x.trinhDo);
   printf("%7.1f", x.hSL);
-  printf("%10.1f", x.phuCap);
+  printf("%10.0f", x.phuCap);
   printf("%10.1f", x.luong);
 }
 
@@ -95,6 +95,7 @@ static void tieuDeGV() {
   printf("\n%4s%25s%15s%15s%7s%10s%10s", "Ma", "Ho ten", "Nam sinh", "Trinh do", "HSL", "Phu cap", "Luong");
 }
 
+// nhap, in danh sach giao vien
 void nhapDSGV(ListGV &Q) {
   int n;
   printf("Nhap so giao vien can them: ");
@@ -116,22 +117,23 @@ void inDSGV(ListGV Q) {
   printf("\n--------------------------------------------------------------------------------------\n");
 }
 
-char tenFileGV[20];
-
+// xu li file
+char tenFileGV[25] = "giaovien.txt";
 
 void luuFileGV(ListGV Q, FILE *f) {
+  NodeGV *p;
   if(Q.Head == NULL) {
     printf("Ds giao vien trong, nhap ds truoc khi luu\n");
     exit(1);
   }
-  printf("Nhap ten file muon luu: ");
-  fflush(stdin);
-  gets(tenFileGV);
+//  printf("Nhap ten file muon luu: ");
+//  fflush(stdin);
+//  gets(tenFileGV);
   f = fopen(tenFileGV, "wb");
   if(f == NULL)
     printf("Mo tep loi!!!\n");
   else {
-    for(NodeGV *p; p != NULL; p = p->next) {
+    for(p = Q.Head; p != NULL; p = p->next) {
       fwrite(&(p->info), sizeof(GiaoVien), 1, f);
     }
     fclose(f);
@@ -145,7 +147,7 @@ void docFileGV(ListGV &Q, FILE *f) {
   f = fopen(tenFileGV, "rb");
   int n = 0;
   if(f == NULL) {
-    printf("Ko tim thay file\n");
+    printf("Mo tep loi\n");
     exit(1);
   }
   Q.Head = Q.Tail = NULL;
@@ -158,6 +160,7 @@ void docFileGV(ListGV &Q, FILE *f) {
   inDSGV(Q);
 }
 
+// tim kiem giao vien theo ma
 void timKiemGV(ListGV Q) {
   int ma, temp = -1;
   NodeGV *p;
@@ -173,6 +176,77 @@ void timKiemGV(ListGV Q) {
   }
   if(temp == -1)
     printf("Ko tim thay gv co ma %d.\n", ma);
+}
+
+// tong luong
+float tongLuongGiaoVien(ListGV Q) {
+  float tongLuong = 0;
+  for(NodeGV *p = Q.Head; p != NULL; p = p->next) {
+    tongLuong += p->info.luong;
+  }
+
+  return tongLuong;
+}
+
+// thong tin giao vien luong max
+NodeGV *luongCaoNhat(ListGV Q) {
+  NodeGV *p;
+  float luongMax = Q.Head->info.luong;
+  for(p = Q.Head; p != NULL; p = p->next) {
+    if(p->info.luong > luongMax)
+      luongMax = p->info.luong;
+  }
+
+  for(p = Q.Head; p != NULL; p = p->next) {
+    if(p->info.luong == luongMax)
+      return p;
+  }
+
+}
+
+// chen giao vien vao sau 1 giao vien theo ma
+void chenSauGV(ListGV &Q) {
+  int maChen;
+  NodeGV *p, *gv;
+  GiaoVien x;
+  printf("\nMa giao vien can chen sau: ");
+  scanf("%d", &maChen);
+  for(p = Q.Head; p != NULL; p = p->next) {
+    if(p->info.maGV == maChen) {
+      nhapGV(x);
+      gv = getNodeGV(x);
+      gv->next = p->next;
+      p->next = gv;
+      if(p == Q.Tail)
+        Q.Tail = p;
+    }
+  }
+}
+
+// xoa giao vien theo ma
+int xoaGV(ListGV &Q, int ma) {
+  NodeGV *p = Q.Head, *q = NULL;
+  while(p != NULL) {
+    if(p->info.maGV == ma)
+      break;
+    q = p;
+    p = p->next;
+  }
+  if(p == NULL)
+    return 0;
+
+  if(q != NULL) {
+    if(p = Q.Tail)
+      Q.Tail = q;
+    q->next = p->next;
+    delete p;
+  }
+  else {
+    Q.Head = p->next;
+    if(Q.Head == NULL)
+      Q.Tail == NULL;
+  }
+  return 1;
 }
 
 /* Mon hoc */
@@ -219,10 +293,22 @@ int main() {
 //  GiaoVien x;
 //  nhapGV(x);
 //  inGV(x);
-  nhapDSGV(listGV);
-  inDSGV(listGV);
-  luuFileGV(listGV, f);
+//  nhapDSGV(listGV);
+//  inDSGV(listGV);
+//  luuFileGV(listGV, f);
   docFileGV(listGV, f);
-  inDSGV(listGV);
-  timKiemGV(listGV);
+//  timKiemGV(listGV);
+//  printf("\nTong luong = %.1f\n", tongLuongGiaoVien(listGV));
+//  printf("\nThong tin giao vien co luong cao nhat\n");
+//  tieuDeGV();
+//  inGV(luongCaoNhat(listGV)->info);
+//  chenSauGV(listGV);
+//  inDSGV(listGV);
+  if(xoaGV(listGV, 23) == 1) {
+    printf("DS giao vien sau khi xoa: \n");
+    inDSGV(listGV);
+  }
+  else
+    printf("Ko tim thay");
+
 }
