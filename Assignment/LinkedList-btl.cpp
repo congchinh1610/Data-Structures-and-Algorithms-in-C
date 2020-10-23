@@ -109,12 +109,16 @@ void nhapDSGV(ListGV &Q) {
 }
 
 void inDSGV(ListGV Q) {
-  printf("--------------------------------------------------------------------------------------");
-  tieuDeGV();
-  for(NodeGV *p = Q.Head; p != NULL; p = p->next) {
-    inGV(p->info);
+  if(Q.Head == NULL)
+    printf("Nhap ds truoc\n");
+  else {
+    printf("--------------------------------------------------------------------------------------");
+    tieuDeGV();
+    for(NodeGV *p = Q.Head; p != NULL; p = p->next) {
+      inGV(p->info);
+    }
+    printf("\n--------------------------------------------------------------------------------------\n");
   }
-  printf("\n--------------------------------------------------------------------------------------\n");
 }
 
 // xu li file
@@ -249,6 +253,42 @@ int xoaGV(ListGV &Q, int ma) {
   return 1;
 }
 
+// sap xep luong tang dan
+ListGV sapXepLuongTangDan(ListGV &Q) {
+  NodeGV *p, *q;
+  GiaoVien tg;
+  for(p = Q.Head; p != NULL; p = p->next) {
+    for(q = p->next; q != NULL; q = q->next) {
+      if(p->info.luong > q->info.luong) {
+        tg = p->info;
+        p->info = q->info;
+        q->info = tg;
+      }
+    }
+  }
+  return Q;
+}
+
+// in ds gv co luong x -> y
+void inTheoLuong(ListGV Q) {
+  float x, y;
+  int temp = -1;
+  printf("x = ");
+  scanf("%f", &x);
+  printf("\ny = ");
+  scanf("%f", &y);
+  for(NodeGV *p = Q.Head; p != NULL; p = p->next) {
+    if((p->info.luong > x) && (p->info.luong < y)) {
+      temp++;
+      if(temp == 0)
+        tieuDeGV();
+      inGV(p->info);
+    }
+  }
+  if(temp == -1)
+    printf("\nKo tim thay\n");
+}
+
 /* Mon hoc */
 // dinh nghia ds mon hoc
 struct MonHoc {
@@ -284,31 +324,219 @@ NodeMH *getNodeMH(MonHoc x) {
   return p;
 }
 
+void chenCuoiMH(ListMH &Q, NodeMH *p) {
+  if(Q.Head == NULL) {
+    Q.Head = p;
+    Q.Tail = Q.Head;
+  }
+  else {
+    Q.Tail->next = p;
+    Q.Tail = p;
+  }
+}
+
+void chenDauMH(ListMH &Q, NodeMH *p) {
+  if(Q.Head == NULL) {
+    Q.Head = p;
+    Q.Head = Q.Tail;
+  }
+  else {
+    p->next = Q.Head;
+    Q.Head = p;
+  }
+}
+
+void nhapMH(MonHoc &x) {
+  printf("Ma mon: ");
+  scanf("%d", &x.maMon);
+  printf("Ten mon: ");
+  fflush(stdin);
+  gets(x.tenMon);
+  printf("So tin chi: ");
+  scanf("%d", &x.soTin);
+  printf("Giang vien: ");
+  fflush(stdin);
+  gets(x.giangVien);
+  printf("Si so lop: ");
+  scanf("%d", &x.siSo);
+  x.soTien = x.soTin * 350;
+}
+
+void inMH(MonHoc x) {
+  printf("\n%4d", x.maMon);
+  printf("%25s", x.tenMon);
+  printf("%10d", x.soTin);
+  printf("%25s", x.giangVien);
+  printf("%10d", x.siSo);
+  printf("%10d", x.soTien);
+}
+
+static void tieuDeMH() {
+  printf("\n%4s%25s%10s%25s%10s%10s", "Ma", "Ten mon", "So tin", "Giang vien", "Si so", "So tien");
+}
+
+// nhap, in ds mon hoc
+void nhapDSMH(ListMH &Q) {
+  int n;
+  printf("Nhap so mon can them: ");
+  scanf("%d", &n);
+  for(int i = 0; i < n; i++) {
+    printf("\nNhap thong tin mon thu %d\n\n", i + 1);
+    MonHoc x;
+    nhapMH(x);
+    chenCuoiMH(Q, getNodeMH(x));
+  }
+}
+
+void inDSMH(ListMH Q) {
+  if(Q.Head == NULL)
+    printf("Nhap ds truoc\n");
+  else {
+    printf("--------------------------------------------------------------------------------------");
+    tieuDeMH();
+    for(NodeMH *p = Q.Head; p != NULL; p = p->next) {
+      inMH(p->info);
+    }
+    printf("\n--------------------------------------------------------------------------------------\n");
+  }
+}
+
+char tenFileMH[25] = "monhoc.txt";
+
+// xu li file mon hoc
+void luuFileMH(ListMH Q, FILE *f) {
+  if(Q.Head == NULL) {
+    printf("Ds mon hoc trong, nhap ds truoc khi luu\n");
+    exit(1);
+  }
+  f = fopen(tenFileMH, "wb");
+  if(f == NULL)
+    printf("Mo tep loi!!!\n");
+  else {
+    for(NodeMH *p = Q.Head; p != NULL; p = p->next) {
+      fwrite(&(p->info), sizeof(MonHoc), 1, f);
+    }
+    fclose(f);
+    printf("Luu file %s thanh cong\n", tenFileMH);
+  }
+}
+
+void docFileMH(ListMH &Q, FILE *f) {
+  MonHoc x;
+  NodeMH *p;
+  f = fopen(tenFileMH, "rb");
+  int n = 0;
+  if(f == NULL) {
+    printf("Mo tep loi\n");
+    exit(1);
+  }
+  Q.Head = Q.Tail = NULL;
+  while(fread(&x, sizeof(x), 1, f) == 1) {
+    chenCuoiMH(Q, getNodeMH(x));
+  }
+  fclose(f);
+  printf("\nDanh sach giao vien doc tu file %s\n", tenFileMH);
+  inDSMH(Q);
+}
+
+
+static void menuGV() {
+  printf("%*s\n", 40, "\n****************************************************");
+    printf("\n%s", "***       CHUONG TRINH QUAN LY GIAO VIEN         ***");
+    printf("\n%s", "***      1. Nhap danh sach giao vien             ***");
+    printf("\n%s", "***      2. Hien danh sach giao vien vua nhap    ***");
+    printf("\n%s", "***      3. Cap nhat thong tin vao file          ***");
+    printf("\n%s", "***      4. Hien danh sach tu file               ***");
+    printf("\n%s", "***      5. Tim kiem theo ma gv                  ***");
+    printf("\n%s", "***      6. Tinh tong luong                      ***");
+    printf("\n%s", "***      7. Thong tin gv co luong cao nhat       ***");
+    printf("\n%s", "***      8. Them gv sau gv co ma la x            ***");
+    printf("\n%s", "***      9. Xoa thong tin giao vien theo ma      ***");
+    printf("\n%s", "***      10. Sap xep luong tang dan              ***");
+    printf("\n%s", "***      11. In gv co luong tu x -> y            ***");
+    printf("\n%s", "***      0. Thoat khoi chuong trinh              ***");
+
+}
+
 
 /*****************/
 int main() {
   FILE *f;
+//  int chon;
+//
+//  do {
+//      system("CLS");
+//    menuGV();
+//    printf("\n%s", "\n         > ");
+//    scanf("%d", &chon);
+//    switch(chon) {
+//      case 1:
+//        nhapDSGV(listGV);
+//        system("PAUSE");
+//        break;
+//      case 2:
+//        inDSGV(listGV);
+//        system("PAUSE");
+//        break;
+//      case 3:
+//        luuFileGV(listGV, f);
+//        system("PAUSE");
+//        break;
+//      case 4:
+//        docFileGV(listGV, f);
+//        system("PAUSE");
+//        break;
+//      case 5:
+//        timKiemGV(listGV);
+//        system("PAUSE");
+//        break;
+//      case 6:
+//        printf("\nTong luong = %.1f\n", tongLuongGiaoVien(listGV));
+//        system("PAUSE");
+//        break;
+//      case 7:
+//        printf("\nThong tin giao vien co luong cao nhat\n");
+//        tieuDeGV();
+//        inGV(luongCaoNhat(listGV)->info);
+//        system("PAUSE");
+//        break;
+//      case 8:
+//        chenSauGV(listGV);
+//        printf("\nDS sau khi chen:\n");
+//        inDSGV(listGV);
+//        system("PAUSE");
+//        break;
+//      case 9: {
+//        int ma;
+//        printf("\nMa gv can xoa: ");
+//        scanf("%d", &ma);
+//        if(xoaGV(listGV, ma) == 1) {
+//          printf("DS giao vien sau khi xoa: \n");
+//          inDSGV(listGV);
+//        }
+//        else
+//          printf("Ko tim thay");
+//      }
+//        system("PAUSE");
+//        break;
+//      case 10:
+//        printf("\nDs da sap xep tang dan theo luong:\n");
+//        inDSGV(sapXepLuongTangDan(listGV));
+//        system("PAUSE");
+//        break;
+//      case 11:
+//        printf("\nDs da sap xep tang dan theo luong:\n");
+//        inTheoLuong(listGV);
+//        system("PAUSE");
+//        break;
+//      default:
+//
+//        break;
+//    }
+//  } while(chon);
 
-
-//  GiaoVien x;
-//  nhapGV(x);
-//  inGV(x);
-//  nhapDSGV(listGV);
-//  inDSGV(listGV);
-//  luuFileGV(listGV, f);
-  docFileGV(listGV, f);
-//  timKiemGV(listGV);
-//  printf("\nTong luong = %.1f\n", tongLuongGiaoVien(listGV));
-//  printf("\nThong tin giao vien co luong cao nhat\n");
-//  tieuDeGV();
-//  inGV(luongCaoNhat(listGV)->info);
-//  chenSauGV(listGV);
-//  inDSGV(listGV);
-  if(xoaGV(listGV, 23) == 1) {
-    printf("DS giao vien sau khi xoa: \n");
-    inDSGV(listGV);
-  }
-  else
-    printf("Ko tim thay");
-
+  nhapDSMH(listMH);
+  inDSMH(listMH);
+  luuFileMH(listMH, f);
+  docFileMH(listMH, f);
 }
