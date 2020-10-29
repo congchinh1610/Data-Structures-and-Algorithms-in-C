@@ -229,7 +229,10 @@ void chenSauGV(ListGV &Q) {
 }
 
 // xoa giao vien theo ma
-int xoaGV(ListGV &Q, int ma) {
+int xoaGV(ListGV &Q) {
+  int ma;
+  printf("\nMa gv can xoa: ");
+  scanf("%d", &ma);
   NodeGV *p = Q.Head, *q = NULL;
   while(p != NULL) {
     if(p->info.maGV == ma)
@@ -282,7 +285,7 @@ void inTheoLuong(ListGV Q) {
     if((p->info.luong > x) && (p->info.luong < y)) {
       temp++;
       if(temp == 0) {
-        printf("DS giao vien co luong tu %d->%d", x, y);
+        printf("DS giao vien co luong tu %f->%f", x, y);
         tieuDeGV();
       }
 
@@ -608,7 +611,7 @@ static void menuMH() {
   printf("\n%s", "***      6. Mon co si so cao nhat                ***");
   printf("\n%s", "***      7. Them mh sau mh co ma la x            ***");
   printf("\n%s", "***      8. Sap xep mon theo tien                ***");
-  printf("\n%s", "***      9. Xoa thong tin giao vien theo ten     ***");
+  printf("\n%s", "***      9. Xoa thong tin mon hoc theo ten       ***");
   printf("\n%s", "***      10. Tong so mon                         ***");
   printf("\n%s", "***      11. In mh co so tin > x                 ***");
   printf("\n%s", "***      12. Tong so tin                         ***");
@@ -663,10 +666,7 @@ void QLGV() {
         system("PAUSE");
         break;
       case 9: {
-        int ma;
-        printf("\nMa gv can xoa: ");
-        scanf("%d", &ma);
-        if(xoaGV(listGV, ma) == 1) {
+        if(xoaGV(listGV) == 1) {
           printf("DS giao vien sau khi xoa: \n");
           inDSGV(listGV);
         }
