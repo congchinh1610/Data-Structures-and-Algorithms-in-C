@@ -244,7 +244,7 @@ int xoaGV(ListGV &Q) {
     return 0;
 
   if(q != NULL) {
-    if(p = Q.Tail)
+    if(p == Q.Tail)
       Q.Tail = q;
     q->next = p->next;
     delete p;
@@ -531,7 +531,7 @@ int xoaMH(ListMH &Q, char ten[25]) {
     return 0;
 
   if(q != NULL) {
-    if(p = Q.Tail)
+    if(p == Q.Tail)
       Q.Tail = q;
     q->next = p->next;
     delete p;
