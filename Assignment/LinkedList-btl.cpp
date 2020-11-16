@@ -71,13 +71,17 @@ void nhapGV(GiaoVien &x) {
   gets(x.tenGV);
   printf("Nam sinh: ");
   scanf("%d", &x.namSinh);
-  printf("Trinh do: ");
+  printf("Trinh do (cu nhan, thac si, tien si): ");
   fflush(stdin);
   gets(x.trinhDo);
   printf("He so luong: ");
   scanf("%f", &x.hSL);
-  printf("Phu cap: ");
-  scanf("%f", &x.phuCap);
+  if (strcasecmp(x.trinhDo, "cu nhan") == 0)
+    x.phuCap = 300;
+  if (strcasecmp(x.trinhDo, "thac si") == 0)
+    x.phuCap = 400;
+  if (strcasecmp(x.trinhDo, "tien si") == 0)
+    x.phuCap = 500;
   x.luong = x.hSL * 3500 + x.phuCap;
 }
 
@@ -110,7 +114,7 @@ void nhapDSGV(ListGV &Q) {
 
 void inDSGV(ListGV Q) {
   if(Q.Head == NULL)
-    printf("Nhap ds truoc\n");
+    printf("DS trong. Nhap ds truoc\n");
   else {
     printf("--------------------------------------------------------------------------------------");
     tieuDeGV();
@@ -228,6 +232,37 @@ void chenSauGV(ListGV &Q) {
   }
 }
 
+// xoa giao vien dau
+void xoaDauGV(ListGV &Q) {
+  NodeGV *p;
+  if(Q.Head != NULL) {
+    p = Q.Head;
+    Q.Head = Q.Head->next;
+    delete p;
+    if(Q.Head == NULL)
+      Q.Tail = NULL;
+  }
+}
+
+// xoa giao vien cuoi
+void xoaCuoiGV(ListGV &Q) {
+  if(Q.Head == NULL) return;
+  NodeGV *p = Q.Head;
+  NodeGV *r = Q.Tail;
+  if(p == r) {
+    Q.Head = Q.Tail = NULL;
+    delete p;
+  }
+  else {
+    while(p->next != r)
+    p = p->next;
+    p->next = NULL;
+    Q.Tail = p;
+    delete r;
+  }
+}
+
+
 // xoa giao vien theo ma
 int xoaGV(ListGV &Q) {
   int ma;
@@ -295,6 +330,38 @@ void inTheoLuong(ListGV Q) {
   if(temp == -1)
     printf("\nKo tim thay\n");
 }
+
+// sap xep ten giao vien
+
+char *catTen(char hoTen[]) {
+  char *t1, *t2;
+  t1 = strtok(hoTen," ");
+  while (t1 != NULL) {
+    t2 = t1;
+    t1 = strtok(NULL," ");
+  }
+  return t2;
+}
+
+ListGV sapXepTenGV(ListGV &Q) {
+  NodeGV *p, *q;
+  GiaoVien tg;
+  for(p = Q.Head; p != NULL; p = p->next) {
+    for(q = p->next; q != NULL; q = q->next) {
+      char *a = catTen(p->info.tenGV);
+      char *b = catTen(q->info.tenGV);
+      if(strcmp(a, b) > 0) {
+        tg = p->info;
+        p->info = q->info;
+        q->info = tg;
+      }
+    }
+  }
+
+  return Q;
+
+}
+
 
 /* Mon hoc */
 // dinh nghia ds mon hoc
@@ -397,7 +464,7 @@ void nhapDSMH(ListMH &Q) {
 
 void inDSMH(ListMH Q) {
   if(Q.Head == NULL)
-    printf("Nhap ds truoc\n");
+    printf("DS trong. Nhap ds truoc\n");
   else {
     printf("--------------------------------------------------------------------------------------");
     tieuDeMH();
@@ -518,6 +585,36 @@ ListMH sapXepTien(ListMH &Q) {
   return Q;
 }
 
+// xoa mon hoc dau
+void xoaDauMH(ListMH &Q) {
+  NodeMH *p;
+  if(Q.Head != NULL) {
+    p = Q.Head;
+    Q.Head = Q.Head->next;
+    delete p;
+    if(Q.Head == NULL)
+      Q.Tail = NULL;
+  }
+}
+
+// xoa mon hoc cuoi
+void xoaCuoiMH(ListMH &Q) {
+  if(Q.Head == NULL) return;
+  NodeMH *p = Q.Head;
+  NodeMH *r = Q.Tail;
+  if(p == r) {
+    Q.Head = Q.Tail = NULL;
+    delete p;
+  }
+  else {
+    while(p->next != r)
+    p = p->next;
+    p->next = NULL;
+    Q.Tail = p;
+    delete r;
+  }
+}
+
 // xoa mon hoc theo ten
 int xoaMH(ListMH &Q, char ten[25]) {
   NodeMH *p = Q.Head, *q = NULL;
@@ -581,6 +678,7 @@ void inMonX(ListMH Q) {
   if(temp == -1)
     printf("\nKo tim thay\n");
 }
+
 
 static void menuGV() {
   printf("%*s\n", 40, "\n****************************************************");
@@ -685,6 +783,14 @@ void QLGV() {
         inTheoLuong(listGV);
         system("PAUSE");
         break;
+      case 12:
+        printf("\nDS sap xep A->Z\n");
+        inDSGV(sapXepTenGV(listGV));
+        system("PAUSE");
+      case 13:
+        xoaDauGV(listGV);
+        inDSGV(listGV);
+        system("PAUSE");
       default:
         break;
     }
@@ -722,6 +828,7 @@ void QLMH() {
         system("PAUSE");
         break;
       case 6:
+        printf("\nMon co si so cao nhat la:\n");
         siSoMax(listMH);
         system("PAUSE");
         break;
@@ -765,6 +872,10 @@ void QLMH() {
         printf("\nTong tien: %d\n", tongSo(listMH, 3));
         system("PAUSE");
         break;
+      case 14:
+        xoaCuoiMH(listMH);
+        inDSMH(listMH);
+        system("PAUSE");
       default:
         break;
     }
@@ -777,7 +888,7 @@ int main() {
   int x;
   while(true) {
     system("CLS");
-    printf("%*s\n", 40, "****************************************************");
+    printf("%*s\n", 40, "****************************************************************");
     printf("\n%s", "***          CHUONG TRINH QUAN LY GIANG DAY GIAO VIEN        ***");
     printf("\n%s", "***          1. Quan ly giao vien                            ***");
     printf("\n%s", "***          2. Quan ly mon hoc                              ***");
